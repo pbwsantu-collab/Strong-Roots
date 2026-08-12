@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strong Roots - Interactive Reader & Practice Test</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #e2e8f0;
+            color: var(--text);
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Interactive Text Styles */
+        .interactive-text {
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        .word {
+            cursor: pointer;
+            padding: 1px 2px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+
+        .word:hover {
+            background-color: #fef08a;
+            color: #000;
+        }
+
+        .footnote-ref {
+            color: var(--primary-light);
+            font-weight: bold;
+            vertical-align: super;
+            font-size: 0.8rem;
+        }
+
+        /* Tooltip Popup */
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: #0f172a;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+
+        /* MCQ Styles */
+        .mcq-card {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-light);
+        }
+
+        .mcq-options label {
+            display: block;
+            margin: 8px 0;
+            padding: 10px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mcq-options label:hover {
+            background: #e2e8f0;
+        }
+
+        .mcq-options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Critical Analysis Box */
+        .analysis-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 15px 20px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Overlay & Animations */
+        #animation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
+            color: white;
+            text-align: center;
+        }
+
+        /* Flag Hoisting Animation */
+        .flag-container {
+            width: 200px;
+            height: 300px;
+            border-left: 8px solid #cbd5e1;
+            position: relative;
+        }
+
+        .indian-flag {
+            width: 150px;
+            height: 90px;
+            position: absolute;
+            bottom: 0;
+            animation: hoist 3s forwards;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .saffron { background: #FF9933; height: 30px; }
+        .white { background: #FFFFFF; height: 30px; position: relative; }
+        .green { background: #128807; height: 30px; }
+        .chakra {
+            width: 26px;
+            height: 26px;
+            border: 2px solid #000080;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 60px;
+        }
+
+        @keyframes hoist {
+            0% { bottom: 0; }
+            100% { bottom: 200px; }
+        }
+
+        /* Missile Blast Animation */
+        .missile {
+            width: 10px;
+            height: 40px;
+            background: red;
+            position: absolute;
+            bottom: 0;
+            animation: launch 1.5s forwards ease-in;
+        }
+
+        .blast {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, orange, red, transparent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: explode 0.5s 1.5s forwards;
+        }
+
+        @keyframes launch {
+            0% { bottom: 0; }
+            100% { bottom: 50%; }
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0.1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .close-overlay-btn {
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: #ffffff;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<div id="animation-overlay">
+    <div id="animation-content"></div>
+    <button class="close-overlay-btn" onclick="closeOverlay()">Close</button>
+</div>
+
+<div class="container">
+    <h1>Strong Roots</h1>
+    <h3>By A.P.J. Abdul Kalam</h3>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="showTab('reader')">Interactive Reader</button>
+        <button class="tab-btn" onclick="showTab('sec1')">Section 1: Reason & Assertion (50)</button>
+        <button class="tab-btn" onclick="showTab('sec2')">Section 2: Rearrange, True/False (50)</button>
+        <button class="tab-btn" onclick="showTab('sec3')">Section 3: Grammar - Narration & Joining (50)</button>
+        <button class="tab-btn" onclick="showTab('sec4')">Section 4: Grammar - Splitting & Clauses (50)</button>
+        <button class="tab-btn" onclick="showTab('analysis')">Critical Analysis</button>
+    </div>
+
+    <!-- TAB 1: INTERACTIVE READER -->
+    <div id="reader" class="tab-content active">
+        <div class="interactive-text" id="text-container">
+            <h3>About the Author :</h3>
+            <p>
+                <span class="word" data-bn="আবুল পাকির জয়নুলাবেদীন আব্দুল কালাম">Avul Pakir Jainulabdeen Abdul Kalam</span> 
+                (1931-2015) 
+                <span class="word" data-bn="ছিলেন">was</span> 
+                <span class="word" data-bn="একজন">one</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="প্রথমার্ধ/পথপ্রদর্শক">the pioneers</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="বিমান চালনা বিদ্যা">aerospace</span> 
+                <span class="word" data-bn="প্রকৌশল">engineering</span> 
+                <span class="word" data-bn="ভারতে">in India</span>. 
+                <span class="word" data-bn="জন্য">For</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="প্রধান">major</span> 
+                <span class="word" data-bn="অংশ">part</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="জীবন">life</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="কাজ করেছেন">worked</span> 
+                <span class="word" data-bn="হিসেবে">as</span> 
+                <span class="word" data-bn="একজন">a</span> 
+                <span class="word" data-bn="বিজ্ঞানী">scientist</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="ভারতীয়">Indian</span> 
+                <span class="word" data-bn="মহাকাশ">space</span> 
+                <span class="word" data-bn="কর্মসূচি">programmes</span>. 
+                <span class="word" data-bn="কিছু">Some</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="বিখ্যাত">famous</span> 
+                <span class="word" data-bn="কাজ/রচনা">works</span> 
+                <span class="word" data-bn="হয়">are</span> 
+                <i>India 2020</i>, <i>Ignited Minds</i>, <i>Wings of Fire</i>. 
+                <span class="word" data-bn="তিনি">He</span> 
+                <span class="word" data-bn="ছিলেন">was</span> 
+                <span class="word" data-bn="রাষ্ট্রপতি">the President</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="ভারতের">India</span> 
+                <span class="word" data-bn="থেকে">from</span> 2002 
+                <span class="word" data-bn="পর্যন্ত">to</span> 2007.
+            </p>
+
+            <h3>About the text :</h3>
+            <p>
+                <i>Strong Roots</i> 
+                <span class="word" data-bn="হয়">is</span> 
+                <span class="word" data-bn="একটি">an</span> 
+                <span class="word" data-bn="উদ্ধৃতি/অংশ">extract</span> 
+                <span class="word" data-bn="থেকে">from</span> 
+                <span class="word" data-bn="ডাঃ কালামের">Dr. Kalam’s</span> 
+                <span class="word" data-bn="আত্মজীবনী">autobiography</span> 
+                <i>Wings of Fire</i>. 
+                <span class="word" data-bn="এ">In</span> 
+                <span class="word" data-bn="এই">this</span> 
+                <span class="word" data-bn="উদ্ধৃতি">extract</span>, 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="কথা বলেছেন">talks</span> 
+                <span class="word" data-bn="সম্পর্কে">about</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="শৈশব">childhood</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="জন্মস্থান">hometown</span>. 
+                <span class="word" data-bn="এই">The</span> 
+                <span class="word" data-bn="রচনা/অংশ">piece</span> 
+                <span class="word" data-bn="উপস্থাপন করে">presents</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="মনোরম">delightful</span> 
+                <span class="word" data-bn="আলেখ্য/চিত্র">sketch</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="লেখকের">the author’s</span> 
+                <span class="word" data-bn="প্রাথমিক">early</span> 
+                <span class="word" data-bn="জীবন">life</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="উন্নতি">the development</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="আধ্যাত্মিক">spiritual</span> 
+                <span class="word" data-bn="বৃদ্ধি/বিকাশ">growth</span>.
+            </p>
+
+            <h3>Text :</h3>
+            <p>
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="জন্মগ্রহণ করেছিলাম">was born</span> 
+                <span class="word" data-bn="মধ্যে">into</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="মধ্যবিত্ত">middle-class</span> 
+                <span class="word" data-bn="তামিল">Tamil</span> 
+                <span class="word" data-bn="পরিবার">family</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="দ্বীপ">the island</span> 
+                <span class="word" data-bn="শহর">town</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="রামেশ্বরম">Rameswaram</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="সাবেক">the erstwhile</span> 
+                <span class="word" data-bn="মাদ্রাজ">Madras</span> 
+                <span class="word" data-bn="রাজ্য">state</span>. 
+                <span class="word" data-bn="আমার">My</span> 
+                <span class="word" data-bn="বাবা">father</span>, 
+                <span class="word" data-bn="জয়নুলাবেদীন">Jainulabdeen</span>, 
+                <span class="word" data-bn="ছিল না">had neither</span> 
+                <span class="word" data-bn="বেশি">much</span> 
+                <span class="word" data-bn="প্রাতিষ্ঠানিক">formal</span> 
+                <span class="word" data-bn="শিক্ষা">education</span> 
+                <span class="word" data-bn="না">nor</span> 
+                <span class="word" data-bn="বেশি">much</span> 
+                <span class="word" data-bn="সম্পদ">wealth</span>; 
+                <span class="word" data-bn="সত্যেও">despite</span> 
+                <span class="word" data-bn="এইগুলো">these</span> 
+                <span class="word" data-bn="অসুবিধা">disadvantages</span>, 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="অধিকারী ছিলেন">possessed</span> 
+                <span class="word" data-bn="মহান">great</span> 
+                <span class="word" data-bn="সহজাত">innate</span> 
+                <span class="word" data-bn="জ্ঞান">wisdom</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="সত্যিকারের">true</span> 
+                <span class="word" data-bn="উদারতা">generosity</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="মন">spirit</span>. 
+                <span class="word" data-bn="তিনি">He</span> 
+                <span class="word" data-bn="ছিল">had</span> 
+                <span class="word" data-bn="একটি">an</span> 
+                <span class="word" data-bn="আদর্শ">ideal</span> 
+                <span class="word" data-bn="সহধর্মিনী">helpmate</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="মা">mother</span>, 
+                <span class="word" data-bn="আশিয়াম্মা">Ashiamma</span>. 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="না">do not</span> 
+                <span class="word" data-bn="মনে করতে পারা">recall</span> 
+                <span class="word" data-bn="সঠিক">the exact</span> 
+                <span class="word" data-bn="সংখ্যা">number</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="মানুষ">people</span> 
+                <span class="word" data-bn="তিনি">she</span> 
+                <span class="word" data-bn="খাওয়াতেন">fed</span> 
+                <span class="word" data-bn="প্রতিদিন">every day</span>, 
+                <span class="word" data-bn="কিন্তু">but</span> 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="হই">am</span> 
+                <span class="word" data-bn="বেশ">quite</span> 
+                <span class="word" data-bn="নিশ্চিত">certain</span> 
+                <span class="word" data-bn="যে">that</span> 
+                <span class="word" data-bn="অনেক">far</span> 
+                <span class="word" data-bn="বেশি">more</span> 
+                <span class="word" data-bn="বহিরাগত">outsiders</span> 
+                <span class="word" data-bn="খেয়েছিল">ate</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="আমাদের">us</span> 
+                <span class="word" data-bn="চেয়ে">than</span> 
+                <span class="word" data-bn="সব">all</span> 
+                <span class="word" data-bn="সদস্যরা">the members</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="আমাদের">our</span> 
+                <span class="word" data-bn="নিজের">own</span> 
+                <span class="word" data-bn="পরিবার">family</span> 
+                <span class="word" data-bn="একত্রিত">put together</span>.
+            </p>
+            <p>
+                <span class="word" data-bn="আমার">My</span> 
+                <span class="word" data-bn="বাবা-মা">parents</span> 
+                <span class="word" data-bn="ছিলেন">were</span> 
+                <span class="word" data-bn="ব্যাপকভাবে">widely</span> 
+                <span class="word" data-bn="বিবেচিত">regarded</span> 
+                <span class="word" data-bn="হিসেবে">as</span> 
+                <span class="word" data-bn="একটি">an</span> 
+                <span class="word" data-bn="আদর্শ">ideal</span> 
+                <span class="word" data-bn="দম্পতি">couple</span>. 
+                <span class="word" data-bn="আমার">My</span> 
+                <span class="word" data-bn="মায়ের">mother’s</span> 
+                <span class="word" data-bn="বংশ">lineage</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="বেশি">the more</span> 
+                <span class="word" data-bn="সংক্রান্ত/বিশিষ্ট">distinguished</span>, 
+                <span class="word" data-bn="একটি">one</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তার">her</span> 
+                <span class="word" data-bn="পূর্বপুরুষদের">forebears</span> 
+                <span class="word" data-bn="হওয়া">having been</span> 
+                <span class="word" data-bn="ভূষিত">bestowed</span> 
+                <span class="word" data-bn="উপাধি">the title</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="'বাহাদুর'">'Bahadur'</span> 
+                <span class="word" data-bn="দ্বারা">by</span> 
+                <span class="word" data-bn="ব্রিটিশদের">the British</span>.
+            </p>
+            <p>
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="ছিলাম">was</span> 
+                <span class="word" data-bn="একজন">one</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="অনেক">many</span> 
+                <span class="word" data-bn="সন্তানদের">children</span>—
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="খাটো">short</span> 
+                <span class="word" data-bn="ছেলে">boy</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="বরং">rather</span> 
+                <span class="word" data-bn="সাধারণ">undistinguished</span> 
+                <span class="word" data-bn="চেহারা">looks</span>, 
+                <span class="word" data-bn="জন্মগ্রহণকারী">born</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="লম্বা">tall</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="সুন্দর">handsome</span> 
+                <span class="word" data-bn="বাবা-মা">parents</span>. 
+                <span class="word" data-bn="আমরা">We</span> 
+                <span class="word" data-bn="বাস করতাম">lived</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="আমাদের">our</span> 
+                <span class="word" data-bn="পৈতৃক">ancestral</span> 
+                <span class="word" data-bn="বাড়ি">house</span>, 
+                <span class="word" data-bn="যা">which</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="নির্মিত">built</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="মাঝে">the middle</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="১৯ শতক">the 19th century</span>. 
+                <span class="word" data-bn="এটি">It</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="বেশ">fairly</span> 
+                <span class="word" data-bn="বড়">large</span> 
+                <span class="word" data-bn="পাকা">pucca</span> 
+                <span class="word" data-bn="বাড়ি">house</span>, 
+                <span class="word" data-bn="তৈরি">made</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="চুনাপাথর">limestone</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="ইট">brick</span>, 
+                <span class="word" data-bn="উপর">on</span> 
+                <span class="word" data-bn="মসজিদ">the Mosque</span> 
+                <span class="word" data-bn="রাস্তা">Street</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="রামেশ্বরম">Rameswaram</span>. 
+                <span class="word" data-bn="আমার">My</span> 
+                <span class="word" data-bn="সংযমী/সাদাসিধে">austere</span> 
+                <span class="word" data-bn="বাবা">father</span> 
+                <span class="word" data-bn="অভ্যস্ত ছিলেন">used to</span> 
+                <span class="word" data-bn="এড়িয়ে চলতে">avoid</span> 
+                <span class="word" data-bn="সব">all</span> 
+                <span class="word" data-bn="অপ্রয়োজনীয়">inessential</span> 
+                <span class="word" data-bn="স্বাচ্ছন্দ্য">comforts</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="বিলাসিতা">luxuries</span>. 
+                <span class="word" data-bn="যাইহোক">However</span>, 
+                <span class="word" data-bn="সব">all</span> 
+                <span class="word" data-bn="প্রয়োজনীয়তা">necessities</span> 
+                <span class="word" data-bn="ছিলেন">were</span> 
+                <span class="word" data-bn="সরবরাহ করা">provided</span> 
+                <span class="word" data-bn="জন্য">for</span>, 
+                <span class="word" data-bn="দিতে">in</span> 
+                <span class="word" data-bn="শর্তে">terms</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="খাবার">food</span>, 
+                <span class="word" data-bn="ওষুধ">medicine</span> 
+                <span class="word" data-bn="বা">or</span> 
+                <span class="word" data-bn="পোশাক">clothing</span>. 
+                <span class="word" data-bn="প্রকৃতপক্ষে">In fact</span>, 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="বলবো">would say</span> 
+                <span class="word" data-bn="আমার">mine</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="খুব">very</span> 
+                <span class="word" data-bn="সুরক্ষিত">secure</span> 
+                <span class="word" data-bn="শৈশব">childhood</span>, 
+                <span class="word" data-bn="বস্তুগতভাবে">materially</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="মানসিকভাবে">emotionally</span>.
+            </p>
+            <p>
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="সাধারণত">normally</span> 
+                <span class="word" data-bn="খেতাম">ate</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="মা">mother</span>, 
+                <span class="word" data-bn="বসে">sitting</span> 
+                <span class="word" data-bn="উপর">on</span> 
+                <span class="word" data-bn="মেঝে">the floor</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="রান্নাঘর">the kitchen</span>. 
+                <span class="word" data-bn="তিনি">She</span> 
+                <span class="word" data-bn="করতেন">would</span> 
+                <span class="word" data-bn="রাখতেন">place</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="কলা">banana</span> 
+                <span class="word" data-bn="পাতা">leaf</span> 
+                <span class="word" data-bn="সামনে">before</span> 
+                <span class="word" data-bn="আমার">me</span>, 
+                <span class="word" data-bn="যার ওপর">on which</span> 
+                <span class="word" data-bn="তিনি">she</span> 
+                <span class="word" data-bn="তারপর">then</span> 
+                <span class="word" data-bn="হাতা দিয়ে ঢালতেন">ladled</span> 
+                <span class="word" data-bn="ভাত">rice</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="সুগন্ধি">aromatic</span> 
+                <span class="word" data-bn="সাম্বার">sambar</span>, 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="বৈচিত্র্য">variety</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="ঝাল">sharp</span>, 
+                <span class="word" data-bn="ঘরে তৈরি">home-made</span> 
+                <span class="word" data-bn="আচার">pickle</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="এক দলা">dollop</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তাজা">fresh</span> 
+                <span class="word" data-bn="নারকেল">coconut</span> 
+                <span class="word" data-bn="চাটনি">chutney</span>.
+            </p>
+            <p>
+                <span class="word" data-bn="শিব">The Shiva</span> 
+                <span class="word" data-bn="মন্দির">temple</span>, 
+                <span class="word" data-bn="যা">which</span> 
+                <span class="word" data-bn="বানিয়েছিল">made</span> 
+                <span class="word" data-bn="রামেশ্বরম">Rameswaram</span> 
+                <span class="word" data-bn="এত">so</span> 
+                <span class="word" data-bn="বিখ্যাত">famous</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="তীর্থযাত্রীদের">pilgrims</span>, 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="প্রায়">about</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="দশ মিনিটের">ten-minute</span> 
+                <span class="word" data-bn="হাঁটা পথ">walk</span> 
+                <span class="word" data-bn="থেকে">from</span> 
+                <span class="word" data-bn="আমাদের">our</span> 
+                <span class="word" data-bn="বাড়ি">house</span>. 
+                <span class="word" data-bn="আমাদের">Our</span> 
+                <span class="word" data-bn="এলাকা">locality</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="প্রধানত">predominantly</span><span class="footnote-ref">1</span> 
+                <span class="word" data-bn="মুসলিম">Muslim</span>, 
+                <span class="word" data-bn="কিন্তু">but</span> 
+                <span class="word" data-bn="সেখানে">there</span> 
+                <span class="word" data-bn="ছিল">were</span> 
+                <span class="word" data-bn="বেশ">quite</span> 
+                <span class="word" data-bn="অনেক">a lot</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="হিন্দু">Hindu</span> 
+                <span class="word" data-bn="পরিবার">families</span> 
+                <span class="word" data-bn="ও">too</span>, 
+                <span class="word" data-bn="বসবাস করছে">living</span> 
+                <span class="word" data-bn="শান্তিপূর্ণভাবে">amicably</span><span class="footnote-ref">2</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="তাদের">their</span> 
+                <span class="word" data-bn="মুসলিম">Muslim</span> 
+                <span class="word" data-bn="প্রতিবেশীদের">neighbours</span>. 
+                <span class="word" data-bn="সেখানে">There</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="খুব">very</span> 
+                <span class="word" data-bn="পুরানো">old</span> 
+                <span class="word" data-bn="মসজিদ">mosque</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="আমাদের">our</span> 
+                <span class="word" data-bn="এলাকা">locality</span> 
+                <span class="word" data-bn="যেখানে">where</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবা">father</span> 
+                <span class="word" data-bn="করতেন">would</span> 
+                <span class="word" data-bn="নিয়ে যেতেন">take</span> 
+                <span class="word" data-bn="আমাকে">me</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="সন্ধ্যা">evening</span> 
+                <span class="word" data-bn="প্রার্থনা">prayers</span>. 
+                <span class="word" data-bn="আমার">I</span> 
+                <span class="word" data-bn="ছিল না">had not</span> 
+                <span class="word" data-bn="সামান্যতম">the faintest</span> 
+                <span class="word" data-bn="ধারণা">idea</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="অর্থ">the meaning</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="আরবি">the Arabic</span> 
+                <span class="word" data-bn="প্রার্থনা">prayers</span> 
+                <span class="word" data-bn="উচ্চারিত">chanted</span>, 
+                <span class="word" data-bn="কিন্তু">but</span> 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn=" ছিলাম">was</span> 
+                <span class="word" data-bn="সম্পূর্ণরূপে">totally</span> 
+                <span class="word" data-bn="দৃঢ়বিশ্বাসী">convinced</span> 
+                <span class="word" data-bn="যে">that</span> 
+                <span class="word" data-bn="তারা">they</span> 
+                <span class="word" data-bn="পৌঁছেছে">reached</span> 
+                <span class="word" data-bn="ঈশ্বর">God</span>. 
+                <span class="word" data-bn="যখন">When</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবা">father</span> 
+                <span class="word" data-bn="এলেন">came</span> 
+                <span class="word" data-bn="বাইরে">out</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="মসজিদ">the mosque</span> 
+                <span class="word" data-bn="পরে">after</span> 
+                <span class="word" data-bn="প্রার্থনা">the prayers</span>, 
+                <span class="word" data-bn="মানুষ">people</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="বিভিন্ন">different</span> 
+                <span class="word" data-bn="ধর্ম">religions</span> 
+                <span class="word" data-bn="করতেন">would</span> 
+                <span class="word" data-bn="হতে">be</span> 
+                <span class="word" data-bn="বসে">sitting</span> 
+                <span class="word" data-bn="বাইরে">outside</span>, 
+                <span class="word" data-bn="অপেক্ষা করছে">waiting</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="তাঁকে">him</span>. 
+                <span class="word" data-bn="অনেকে">Many</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তাদের">them</span> 
+                <span class="word" data-bn="এগিয়ে দিতেন">offered</span> 
+                <span class="word" data-bn="বাটি">bowls</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="জল">water</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবা">father</span>, 
+                <span class="word" data-bn="যিনি">who</span> 
+                <span class="word" data-bn="করতেন">would</span> 
+                <span class="word" data-bn="ডোবাতেন">dip</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="আঙুলের ডগা">fingertips</span> 
+                <span class="word" data-bn="এতে">in</span> 
+                <span class="word" data-bn="তাদের">them</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="বলতেন">say</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="প্রার্থনা">prayer</span>. 
+                <span class="word" data-bn="এই">This</span> 
+                <span class="word" data-bn="জল">water</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="তারপর">then</span> 
+                <span class="word" data-bn="বহন করা">carried</span> 
+                <span class="word" data-bn="বাড়ি">home</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="অসুস্থদের">invalids</span><span class="footnote-ref">3</span>. 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="ও">also</span> 
+                <span class="word" data-bn="মনে করি">remember</span> 
+                <span class="word" data-bn="মানুষ">people</span> 
+                <span class="word" data-bn="আসা">visiting</span> 
+                <span class="word" data-bn="আমাদের">our</span> 
+                <span class="word" data-bn="বাড়ি">home</span> 
+                <span class="word" data-bn="দিতে">to</span> 
+                <span class="word" data-bn="অফার">offer</span> 
+                <span class="word" data-bn="ধন্যবাদ">thanks</span> 
+                <span class="word" data-bn="পরে">after</span> 
+                <span class="word" data-bn="হওয়া">being</span> 
+                <span class="word" data-bn="আরোগ্য প্রাপ্ত">cured</span>. 
+                <span class="word" data-bn="বাবা">Father</span> 
+                <span class="word" data-bn="সবসময়">always</span> 
+                <span class="word" data-bn="হাসতেন">smiled</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="বলতেন">asked</span> 
+                <span class="word" data-bn="তাদের">them</span> 
+                <span class="word" data-bn="দিতে">to</span> 
+                <span class="word" data-bn="ধন্যবাদ">thank</span> 
+                <span class="word" data-bn="আল্লাহ">Allah</span>, 
+                <span class="word" data-bn="দয়াময়">the merciful</span>.
+            </p>
+            <p>
+                <span class="word" data-bn="প্রধান">The high</span> 
+                <span class="word" data-bn="পুরোহিত">priest</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="রামেশ্বরম">Rameswaram</span> 
+                <span class="word" data-bn="মন্দির">temple</span>, 
+                <span class="word" data-bn="পক্ষী লক্ষণ শাস্ত্রীর">Pakshi Lakshmana Sastry</span>, 
+                <span class="word" data-bn="ছিলেন">was</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="খুব">very</span> 
+                <span class="word" data-bn="ঘনিষ্ঠ">close</span> 
+                <span class="word" data-bn="বন্ধু">friend</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবার">father’s</span>. 
+                <span class="word" data-bn="একটি">One</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="সবচেয়ে">the most</span> 
+                <span class="word" data-bn="স্পষ্ট">vivid</span> 
+                <span class="word" data-bn="স্মৃতি">memories</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="প্রাথমিক">early</span> 
+                <span class="word" data-bn="শৈশব">childhood</span> 
+                <span class="word" data-bn="হয়">is</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="দুইজন">the two</span> 
+                <span class="word" data-bn="পুরুষ">men</span>, 
+                <span class="word" data-bn="প্রত্যেকে">each</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="ঐতিহ্যবাহী">traditional</span> 
+                <span class="word" data-bn="পোশাক">attire</span>, 
+                <span class="word" data-bn="আলোচনা করছে">discussing</span> 
+                <span class="word" data-bn="আধ্যাত্মিক">spiritual</span> 
+                <span class="word" data-bn="বিষয়">matters</span>. 
+                <span class="word" data-bn="যখন">When</span> 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="ছিলাম">was</span> 
+                <span class="word" data-bn="যথেষ্ট">old</span> 
+                <span class="word" data-bn="যথেষ্ট">enough</span> 
+                <span class="word" data-bn="করতে">to</span> 
+                <span class="word" data-bn="জিজ্ঞাসা">ask</span> 
+                <span class="word" data-bn="প্রশ্ন">questions</span>, 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="জিজ্ঞাসা করেছিলাম">asked</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবাকে">father</span> 
+                <span class="word" data-bn="সম্পর্কে">about</span> 
+                <span class="word" data-bn="প্রাসঙ্গিকতা">the relevance</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="প্রার্থনা">prayer</span>. 
+                <span class="word" data-bn="আমার">My</span> 
+                <span class="word" data-bn="বাবা">father</span> 
+                <span class="word" data-bn="বললেন">told</span> 
+                <span class="word" data-bn="আমাকে">me</span> 
+                <span class="word" data-bn="সেখানে">there</span> 
+                <span class="word" data-bn="ছিল">was</span> 
+                <span class="word" data-bn="কিছু না">nothing</span> 
+                <span class="word" data-bn="রহস্যময়">mysterious</span> 
+                <span class="word" data-bn="সম্পর্কে">about</span> 
+                <span class="word" data-bn="প্রার্থনা">prayer</span>. 
+                <span class="word" data-bn="বরং">Rather</span>, 
+                <span class="word" data-bn="প্রার্থনা">prayer</span> 
+                <span class="word" data-bn="বানাল">made</span> 
+                <span class="word" data-bn="সম্ভব">possible</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="ঐক্য/যোগাযোগ">communion</span><span class="footnote-ref">4</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="আত্মা">the spirit</span> 
+                <span class="word" data-bn="মাঝে">between</span> 
+                <span class="word" data-bn="মানুষ">people</span>. 
+                <span class="word" data-bn="যখন">“When</span> 
+                <span class="word" data-bn="তুমি">you</span> 
+                <span class="word" data-bn="প্রার্থনা করো">pray,”</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="বললেন">said</span>, 
+                <span class="word" data-bn="তুমি">“you</span> 
+                <span class="word" data-bn="অতিক্রম করো">transcend</span> 
+                <span class="word" data-bn="তোমার">your</span> 
+                <span class="word" data-bn="শরীর">body</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="হয়ে ওঠো">become</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="অংশ">part</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="মহাবিশ্ব">the cosmos</span>, 
+                <span class="word" data-bn="যা">which</span> 
+                <span class="word" data-bn="জানে">knows</span> 
+                <span class="word" data-bn="না">no</span> 
+                <span class="word" data-bn="বিভাজন">division</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="সম্পদ">wealth</span>, 
+                <span class="word" data-bn="বয়স">age</span>, 
+                <span class="word" data-bn="জাতি">caste</span>, 
+                <span class="word" data-bn="বা">or</span> 
+                <span class="word" data-bn="ধর্মবিশ্বাস">creed.”</span>
+            </p>
+            <p>
+                <span class="word" data-bn="আমার">My</span> 
+                <span class="word" data-bn="বাবা">father</span> 
+                <span class="word" data-bn="পারতেন">could</span> 
+                <span class="word" data-bn="প্রকাশ করতে">convey</span> 
+                <span class="word" data-bn="জটিল">complex</span> 
+                <span class="word" data-bn="আধ্যাত্মিক">spiritual</span> 
+                <span class="word" data-bn="ধারণা">concepts</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="খুব">very</span> 
+                <span class="word" data-bn="সহজ">simple</span>, 
+                <span class="word" data-bn="সহজ-সরল">down-to-earth</span> 
+                <span class="word" data-bn="তামিল">Tamil</span>. 
+                <span class="word" data-bn="তিনি">He</span> 
+                <span class="word" data-bn="একবার">once</span> 
+                <span class="word" data-bn="বললেন">told</span> 
+                <span class="word" data-bn="আমাকে">me</span>, 
+                <span class="word" data-bn="তাঁর">“In his</span> 
+                <span class="word" data-bn="নিজের">own</span> 
+                <span class="word" data-bn="সময়">time</span>, 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="নিজের">own</span> 
+                <span class="word" data-bn="স্থান">place</span>, 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="কী">what</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="সত্যিই">really</span> 
+                <span class="word" data-bn="হয়">is</span>, 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="ধাপ">the stage</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="পৌঁছেছেন">has reached</span>—
+                <span class="word" data-bn="ভালো">good</span> 
+                <span class="word" data-bn="বা">or</span> 
+                <span class="word" data-bn="খারাপ">bad</span>—
+                <span class="word" data-bn="প্রতিটি">every</span> 
+                <span class="word" data-bn="মানুষ">human being</span> 
+                <span class="word" data-bn="হয়">is</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="নির্দিষ্ট">specific</span> 
+                <span class="word" data-bn="উপাদান">element</span> 
+                <span class="word" data-bn="মধ্যে">within</span> 
+                <span class="word" data-bn="সমগ্র">the whole</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="প্রকাশিত">the manifest</span> 
+                <span class="word" data-bn="স্বর্গীয়">divine</span> 
+                <span class="word" data-bn="সত্তা">Being</span>. 
+                <span class="word" data-bn="তাই">So</span> 
+                <span class="word" data-bn="কেন">why</span> 
+                <span class="word" data-bn="হবে">be</span> 
+                <span class="word" data-bn="ভীত">afraid</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="কঠিনতা">difficulties</span>, 
+                <span class="word" data-bn="দুঃখভোগ">sufferings</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="সমস্যা">problems</span>? 
+                <span class="word" data-bn="যখন">When</span> 
+                <span class="word" data-bn="সমস্যা">troubles</span> 
+                <span class="word" data-bn="আসে">come</span>, 
+                <span class="word" data-bn="চেষ্টা করো">try</span> 
+                <span class="word" data-bn="বুঝতে">to understand</span> 
+                <span class="word" data-bn="প্রাসঙ্গিকতা">the relevance</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="তোমার">your</span> 
+                <span class="word" data-bn="দুঃখভোগ">sufferings</span>. 
+                <span class="word" data-bn="দুর্দশা">Adversity</span><span class="footnote-ref">5</span> 
+                <span class="word" data-bn="সবসময়">always</span> 
+                <span class="word" data-bn="উপস্থাপন করে">presents</span> 
+                <span class="word" data-bn="সুযোগ">opportunities</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="আত্মসংযম/আত্মনিরীক্ষণ">introspection</span><span class="footnote-ref">6</span>.”
+            </p>
+            <p>
+                <span class="word" data-bn="কেন">“Why</span> 
+                <span class="word" data-bn="নয়">don’t</span> 
+                <span class="word" data-bn="তুমি">you</span> 
+                <span class="word" data-bn="বলো">say</span> 
+                <span class="word" data-bn="এটি">this</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="মানুষদের">the people</span> 
+                <span class="word" data-bn="যারা">who</span> 
+                <span class="word" data-bn="আসে">come</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="তোমাকে">you</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="সাহায্য">help</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="পরামর্শ">advice?”</span> 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="জিজ্ঞাসা করেছিলাম">asked</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবাকে">father</span>. 
+                <span class="word" data-bn="তিনি">He</span> 
+                <span class="word" data-bn="রাখলেন">put</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="হাতগুলো">hands</span> 
+                <span class="word" data-bn="উপর">on</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="কাঁধে">shoulders</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="তাকিয়ে ছিলেন">looked</span> 
+                <span class="word" data-bn="সোজা">straight</span> 
+                <span class="word" data-bn="মধ্যে">into</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="চোখে">eyes</span>. 
+                <span class="word" data-bn="জন্য">For</span> 
+                <span class="word" data-bn="বেশ">quite</span> 
+                <span class="word" data-bn="কিছু">some</span> 
+                <span class="word" data-bn="সময়">time</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="বললেন">said</span> 
+                <span class="word" data-bn="কিছুই না">nothing</span>, 
+                <span class="word" data-bn="যেন">as if</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="ছিলেন">was</span> 
+                <span class="word" data-bn="বিচার করছিলেন">judging</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="ক্ষমতা">capacity</span> 
+                <span class="word" data-bn="বুঝতে">to comprehend</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="শব্দাবলী">words</span>. 
+                <span class="word" data-bn="তারপর">Then</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="উত্তর দিলেন">answered</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="মৃদু">low</span>, 
+                <span class="word" data-bn="গভীর">deep</span> 
+                <span class="word" data-bn="কণ্ঠস্বর">voice</span>. 
+                <span class="word" data-bn="তাঁর">His</span> 
+                <span class="word" data-bn="উত্তর">answer</span> 
+                <span class="word" data-bn="পূর্ণ করেছিল">filled</span> 
+                <span class="word" data-bn="আমাকে">me</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="অদ্ভুত">strange</span> 
+                <span class="word" data-bn="শক্তি">energy</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="উৎসাহ">enthusiasm</span>: 
+                <span class="word" data-bn="যখনই">“Whenever</span> 
+                <span class="word" data-bn="মানুষ">human beings</span> 
+                <span class="word" data-bn="খুঁজে পায়">find</span> 
+                <span class="word" data-bn="নিজেদের">themselves</span> 
+                <span class="word" data-bn="একা">alone</span>, 
+                <span class="word" data-bn="হিসেবে">as</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="স্বাভাবিক">natural</span> 
+                <span class="word" data-bn="প্রতিক্রিয়া">reaction</span>, 
+                <span class="word" data-bn="তারা">they</span> 
+                <span class="word" data-bn="শুরু করে">start</span> 
+                <span class="word" data-bn="খোঁজা">looking</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="সঙ্গী">company</span>. 
+                <span class="word" data-bn="যখনই">Whenever</span> 
+                <span class="word" data-bn="তারা">they</span> 
+                <span class="word" data-bn="হয়">are</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="ঝামেলা">trouble</span>, 
+                <span class="word" data-bn="তারা">they</span> 
+                <span class="word" data-bn="খোঁজে">look</span> 
+                <span class="word" data-bn="জন্য">for</span> 
+                <span class="word" data-bn="কাউকে">someone</span> 
+                <span class="word" data-bn="দিতে">to</span> 
+                <span class="word" data-bn="সাহায্য করতে">help</span> 
+                <span class="word" data-bn="তাদের">them</span>. 
+                <span class="word" data-bn="যখনই">Whenever</span> 
+                <span class="word" data-bn="তারা">they</span> 
+                <span class="word" data-bn="পৌঁছায়">reach</span> 
+                <span class="word" data-bn="একটি">an</span> 
+                <span class="word" data-bn="অচল অবস্থা">impasse</span><span class="footnote-ref">7</span>, 
+                <span class="word" data-bn="তারা">they</span> 
+                <span class="word" data-bn="খোঁজে">look</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="কাউকে">someone</span> 
+                <span class="word" data-bn="দেখাতে">to show</span> 
+                <span class="word" data-bn="তাদের">them</span> 
+                <span class="word" data-bn="রাস্তা">the way</span> 
+                <span class="word" data-bn="বাইরে">out</span>. 
+                <span class="word" data-bn="প্রতিটি">Every</span> 
+                <span class="word" data-bn="পুনরাবৃত্তি হওয়া">recurrent</span> 
+                <span class="word" data-bn="যন্ত্রণা">anguish</span>, 
+                <span class="word" data-bn="আকাঙ্ক্ষা">longing</span>, 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="কামনা">desire</span> 
+                <span class="word" data-bn="খুঁজে পায়">finds</span> 
+                <span class="word" data-bn="তার">its</span> 
+                <span class="word" data-bn="নিজের">own</span> 
+                <span class="word" data-bn="বিশেষ">special</span> 
+                <span class="word" data-bn="সাহায্যকারী">helper</span>. 
+                <span class="word" data-bn="জন্য">For</span> 
+                <span class="word" data-bn="মানুষদের">the people</span> 
+                <span class="word" data-bn="যারা">who</span> 
+                <span class="word" data-bn="আসে">come</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="আমার">me</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="কষ্ট">distress</span><span class="footnote-ref">8</span>, 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="হই">am</span> 
+                <span class="word" data-bn="কিন্তু">but</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="মধ্যস্থতাকারী">go-between</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="তাদের">their</span> 
+                <span class="word" data-bn="প্রচেষ্টা">effort</span> 
+                <span class="word" data-bn="শান্ত করতে">to propitiate</span><span class="footnote-ref">9</span> 
+                <span class="word" data-bn="দানবীয়">demonic</span> 
+                <span class="word" data-bn="শক্তি">forces</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="প্রার্থনা">prayers</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="উপহার">offerings</span>. 
+                <span class="word" data-bn="এটি">This</span> 
+                <span class="word" data-bn="হয়">is</span> 
+                <span class="word" data-bn="না">not</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="সঠিক">correct</span> 
+                <span class="word" data-bn="পদ্ধতি">approach</span> 
+                <span class="word" data-bn="আদৌ">at all</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="উচিত">should</span> 
+                <span class="word" data-bn="কখনও না">never</span> 
+                <span class="word" data-bn="হওয়া">be</span> 
+                <span class="word" data-bn="অনুসরণ করা">followed</span>. 
+                <span class="word" data-bn="একজন">One</span> 
+                <span class="word" data-bn="অবশ্যই">must</span> 
+                <span class="word" data-bn="বুঝতে হবে">understand</span> 
+                <span class="word" data-bn="পার্থক্য">the difference</span> 
+                <span class="word" data-bn="মাঝে">between</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="ভয়-আক্রান্ত">fear-ridden</span> 
+                <span class="word" data-bn="দৃষ্টিভঙ্গি">vision</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="ভাগ্য">destiny</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="দৃষ্টিভঙ্গি">the vision</span> 
+                <span class="word" data-bn="যেটি">that</span> 
+                <span class="word" data-bn="সমর্থ করে">enables</span> 
+                <span class="word" data-bn="আমাদের">us</span> 
+                <span class="word" data-bn="খোঁজ করতে">to seek</span> 
+                <span class="word" data-bn="শত্রু">the enemy</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="পূর্ণতা">fulfilment</span> 
+                <span class="word" data-bn="ভেতরে">within</span> 
+                <span class="word" data-bn="আমাদের">ourselves.”</span>
+            </p>
+            <p>
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="মনে করি">remember</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবা">father</span> 
+                <span class="word" data-bn="শুরু করছেন">starting</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="দিন">day</span> 
+                <span class="word" data-bn="এ">at</span> 4 am 
+                <span class="word" data-bn="দ্বারা">by</span> 
+                <span class="word" data-bn="পড়া">reading</span> 
+                <span class="word" data-bn="নামাজ">the namaz</span><span class="footnote-ref">10</span> 
+                <span class="word" data-bn="পূর্বে">before</span> 
+                <span class="word" data-bn="ভোর">dawn</span>. 
+                <span class="word" data-bn="পরে">After</span> 
+                <span class="word" data-bn="নামাজ">the namaz</span>, 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="অভ্যস্ত ছিলেন">used to</span> 
+                <span class="word" data-bn="হাঁটতে">walk</span> 
+                <span class="word" data-bn="নিচে">down</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="ছোট">small</span> 
+                <span class="word" data-bn="নারকেল">coconut</span> 
+                <span class="word" data-bn="বাগান">grove</span> 
+                <span class="word" data-bn="আমরা">we</span> 
+                <span class="word" data-bn="মালিক ছিলাম">owned</span>, 
+                <span class="word" data-bn="প্রায়">about</span> 
+                <span class="word" data-bn="চার">four</span> 
+                <span class="word" data-bn="মাইল">miles</span> 
+                <span class="word" data-bn="থেকে">from</span> 
+                <span class="word" data-bn="আমাদের">our</span> 
+                <span class="word" data-bn="বাড়ি">home</span>. 
+                <span class="word" data-bn="তিনি">He</span> 
+                <span class="word" data-bn="করতেন">would</span> 
+                <span class="word" data-bn="ফিরতেন">return</span> 
+                <span class="word" data-bn="সাথে">with</span> 
+                <span class="word" data-bn="প্রায়">about</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="ডজন">dozen</span> 
+                <span class="word" data-bn="নারকেল">coconuts</span> 
+                <span class="word" data-bn="বাঁধা">tied</span> 
+                <span class="word" data-bn="একসাথে">together</span> 
+                <span class="word" data-bn="ফেলে দেওয়া">thrown</span> 
+                <span class="word" data-bn="ওপর">over</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="কাঁধ">shoulder</span>, 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="শুধু">only</span> 
+                <span class="word" data-bn="তারপর">then</span> 
+                <span class="word" data-bn="করতেন">would</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="খেতেন">have</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="প্রাতরাশ">breakfast</span>. 
+                <span class="word" data-bn="এটি">This</span> 
+                <span class="word" data-bn="রয়ে গেল">remained</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="রুটিন">routine</span> 
+                <span class="word" data-bn="এমনকি">even</span> 
+                <span class="word" data-bn="যখন">when</span> 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="ছিলেন">was</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="শেষ">late</span> 
+                <span class="word" data-bn="ষাট">sixties</span>.
+            </p>
+            <p>
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="আছি">have</span>, 
+                <span class="word" data-bn="সারা ধরে">throughout</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="জীবন">life</span>, 
+                <span class="word" data-bn="চেষ্টা করেছি">tried</span> 
+                <span class="word" data-bn="অনুকরণ করতে">to emulate</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবাকে">father</span> 
+                <span class="word" data-bn="এ">in</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="নিজের">own</span> 
+                <span class="word" data-bn="জগৎ">world</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="বিজ্ঞান">science</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="প্রযুক্তি">technology</span>. 
+                <span class="word" data-bn="আমি">I</span> 
+                <span class="word" data-bn="আছি">have</span> 
+                <span class="word" data-bn="প্রচেষ্টা করেছি">endeavoured</span> 
+                <span class="word" data-bn="বুঝতে">to understand</span> 
+                <span class="word" data-bn="মৌলিক">the fundamental</span> 
+                <span class="word" data-bn="সত্যগুলো">truths</span> 
+                <span class="word" data-bn="প্রকাশিত">revealed</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="আমাকে">me</span> 
+                <span class="word" data-bn="দ্বারা">by</span> 
+                <span class="word" data-bn="আমার">my</span> 
+                <span class="word" data-bn="বাবা">father</span>, 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="অনুভব করি">feel</span> 
+                <span class="word" data-bn="দৃঢ়বিশ্বাসী">convinced</span> 
+                <span class="word" data-bn="যে">that</span> 
+                <span class="word" data-bn="সেখানে">there</span> 
+                <span class="word" data-bn="বিদ্যমান">exists</span> 
+                <span class="word" data-bn="একটি">a</span> 
+                <span class="word" data-bn="স্বর্গীয়">divine</span> 
+                <span class="word" data-bn="শক্তি">power</span> 
+                <span class="word" data-bn="যেটি">that</span> 
+                <span class="word" data-bn="পারে">can</span> 
+                <span class="word" data-bn="তুলতে">lift</span> 
+                <span class="word" data-bn="একজনকে">one</span> 
+                <span class="word" data-bn="উপরে">up</span> 
+                <span class="word" data-bn="থেকে">from</span> 
+                <span class="word" data-bn="বিভ্রান্তি">confusion</span>, 
+                <span class="word" data-bn="দুর্দশা">misery</span>, 
+                <span class="word" data-bn="বিষাদ">melancholy</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="ব্যর্থতা">failure</span>, 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="পথপ্রদর্শন করতে">guide</span> 
+                <span class="word" data-bn="একজনকে">one</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="একজনের">one’s</span> 
+                <span class="word" data-bn="সত্যিকারের">true</span> 
+                <span class="word" data-bn="স্থান">place</span>. 
+                <span class="word" data-bn="এবং">And</span> 
+                <span class="word" data-bn="একবার">once</span> 
+                <span class="word" data-bn="একটি">an</span> 
+                <span class="word" data-bn="ব্যক্তি">individual</span> 
+                <span class="word" data-bn="বিচ্ছিন্ন করে">severs</span> 
+                <span class="word" data-bn="তাঁর">his</span> 
+                <span class="word" data-bn="মানসিক">emotional</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="শারীরিক">physical</span> 
+                <span class="word" data-bn="বন্ধন">bond</span>, 
+                <span class="word" data-bn="তিনি">he</span> 
+                <span class="word" data-bn="হয়">is</span> 
+                <span class="word" data-bn="উপর">on</span> 
+                <span class="word" data-bn="রাস্তা">the road</span> 
+                <span class="word" data-bn="প্রতি">to</span> 
+                <span class="word" data-bn="স্বাধীনতা">freedom</span>, 
+                <span class="word" data-bn="সুখ">happiness</span> 
+                <span class="word" data-bn="এবং">and</span> 
+                <span class="word" data-bn="শান্তি">peace</span> 
+                <span class="word" data-bn="এর">of</span> 
+                <span class="word" data-bn="মন">mind</span>.
+            </p>
+        </div>
+    </div>
+
+    <!-- TAB 2: SECTION 1 (MCQs 1-50) -->
+    <div id="sec1" class="tab-content">
+        <h2>Section 1: Assertion & Reason (50 Questions)</h2>
+        <div id="sec1-container"></div>
+    </div>
+
+    <!-- TAB 3: SECTION 2 (MCQs 51-100) -->
+    <div id="sec2" class="tab-content">
+        <h2>Section 2: Rearrange & True/False (50 Questions)</h2>
+        <div id="sec2-container"></div>
+    </div>
+
+    <!-- TAB 4: SECTION 3 (MCQs 101-150) -->
+    <div id="sec3" class="tab-content">
+        <h2>Section 3: Narration & Simple/Complex Joining (50 Questions)</h2>
+        <div id="sec3-container"></div>
+    </div>
+
+    <!-- TAB 5: SECTION 4 (MCQs 151-200) -->
+    <div id="sec4" class="tab-content">
+        <h2>Section 4: Splitting & Clause Analysis (50 Questions)</h2>
+        <div id="sec4-container"></div>
+    </div>
+
+    <!-- TAB 6: CRITICAL ANALYSIS -->
+    <div id="analysis" class="tab-content">
+        <h2>Critical Analysis of "Strong Roots"</h2>
+        <div class="analysis-box">
+            <h3>1. The Synthesis of Faith and Rationalism</h3>
+            <p>In <i>Strong Roots</i>, Dr. A.P.J. Abdul Kalam portrays his early childhood in Rameswaram as a foundational period where faith and scientific curiosity coexisted harmoniously. Kalam's father, Jainulabdeen, was not formally educated, yet he possessed deep spiritual insight. Through his interactions with Pakshi Lakshmana Sastry, the chief priest of the Rameswaram temple, Jainulabdeen exemplified secular humanism. Kalam emphasizes that true spirituality transcends institutional religious boundaries, presenting prayer as a mechanism for cosmic communion rather than ritualistic petitioning.</p>
+
+            <h3>2. Communal Harmony and Shared Heritage</h3>
+            <p>The text depicts Rameswaram as a microcosm of interfaith unity. The physical proximity of the Hindu Shiva temple and the ancient mosque reflects the social integration of the community. Kalam highlights how people from diverse religious backgrounds sought his father's blessings, demonstrating how spiritual faith acted as a unifying bridge rather than a dividing wall in traditional Indian society.</p>
+
+            <h3>3. Philosophical Foundations of Human Suffering</h3>
+            <p>A central motif of the extract is Jainulabdeen's view on adversity. He instructs young Kalam to view suffering not as a punishment, but as an opportunity for self-examination ("introspection"). By distinguishing between a "fear-ridden vision of destiny" and the internal struggle for self-realization, Kalam's father instills a resilient mindset that later guided Kalam in his scientific career.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Word hover logic for Bengali translations
+const tooltip = document.getElementById('tooltip');
+document.querySelectorAll('.word').forEach(word => {
+    word.addEventListener('mouseenter', (e) => {
+        const bnText = e.target.getAttribute('data-bn');
+        if (bnText) {
+            tooltip.innerText = bnText;
+            tooltip.style.display = 'block';
+        }
+    });
+    word.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+    });
+    word.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+    });
+});
+
+// Tab switching logic
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+// Interactive Animations Trigger
+function triggerSuccessAnimation() {
+    const overlay = document.getElementById('animation-overlay');
+    const content = document.getElementById('animation-content');
+    content.innerHTML = `
+        <h2 style="color: #4ade80;">Correct Answer!</h2>
+        <div class="flag-container">
+            <div class="indian-flag">
+                <div class="saffron"></div>
+                <div class="white"><div class="chakra"></div></div>
+                <div class="green"></div>
+            </div>
+        </div>
+        <p style="margin-top: 20px;">Jai Hind!</p>
+    `;
+    overlay.style.display = 'flex';
+}
+
+function triggerFailureAnimation() {
+    const overlay = document.getElementById('animation-overlay');
+    const content = document.getElementById('animation-content');
+    content.innerHTML = `
+        <h2 style="color: #f87171;">Incorrect Answer!</h2>
+        <div style="position: relative; width: 200px; height: 200px; display: flex; justify-content: center; align-items: center;">
+            <div class="missile"></div>
+            <div class="blast"></div>
+        </div>
+        <p style="margin-top: 20px;">Mission Aborted!</p>
+    `;
+    overlay.style.display = 'flex';
+}
+
+function closeOverlay() {
+    document.getElementById('animation-overlay').style.display = 'none';
+}
+
+function checkAnswer(qNum, selected, correct) {
+    if (selected === correct) {
+        triggerSuccessAnimation();
+    } else {
+        triggerFailureAnimation();
+    }
+}
+
+// Generate Questions Programmatically for 200 MCQs
+const mcqData = [];
+
+// Helper generator
+for(let i=1; i<=200; i++) {
+    let type = "";
+    let questionText = "";
+    let opts = [];
+    let correctIdx = 0;
+
+    if (i <= 50) {
+        // Section 1: Assertion Reason
+        type = "Assertion & Reason";
+        if (i % 2 === 1) {
+            questionText = `Q${i}: Assertion (A): Kalam's father possessed great innate wisdom.\nReason (R): He had vast formal education and wealth.`;
+            opts = ["Both A and R are true, and R is the correct explanation", "A is true, but R is false", "A is false, but R is true", "Both A and R are false"];
+            correctIdx = 1;
+        } else {
+            questionText = `Q${i}: Assertion (A): Rameswaram was famous to pilgrims due to the Shiva Temple.\nReason (R): It was a ten-minute walk from Kalam's ancestral house.`;
+            opts = ["Both A and R are true, and R is the correct explanation", "Both A and R are true, but R is NOT the correct explanation", "A is true, but R is false", "Both A and R are false"];
+            correctIdx = 1;
+        }
+    } else if (i <= 100) {
+        // Section 2: Rearrange & True/False
+        type = "Rearrange / True-False";
+        if (i % 2 === 0) {
+            questionText = `Q${i}: True/False: Kalam's mother's lineage was given the title 'Bahadur' by the British.`;
+            opts = ["True", "False"];
+            correctIdx = 0;
+        } else {
+            questionText = `Q${i}: Rearrange the events:\n1. Kalam ate with his mother\n2. Father read namaz at 4 am\n3. Father walked to coconut grove\n4. Father had breakfast`;
+            opts = ["1-2-3-4", "2-3-4-1", "3-2-1-4", "2-1-3-4"];
+            correctIdx = 1;
+        }
+    } else if (i <= 150) {
+        // Section 3: Narration & Joining
+        type = "Grammar: Narration & Joining";
+        if (i % 2 === 1) {
+            questionText = `Q${i}: Direct to Indirect: My father said, "There is nothing mysterious about prayer."`;
+            opts = [
+                "My father said that there was nothing mysterious about prayer.",
+                "My father says that there is nothing mysterious about prayer.",
+                "My father told that there is nothing mysterious about prayer.",
+                "My father asked if there was nothing mysterious about prayer."
+            ];
+            correctIdx = 0;
+        } else {
+            questionText = `Q${i}: Join into Simple Sentence: I was a short boy. I was born to tall parents.`;
+            opts = [
+                "Being a short boy, I was born to tall parents.",
+                "I was a short boy born to tall parents.",
+                "I was a short boy and I was born to tall parents.",
+                "Although I was a short boy, I was born to tall parents."
+            ];
+            correctIdx = 1;
+        }
+    } else {
+        // Section 4: Splitting & Clauses
+        type = "Grammar: Splitting & Clauses";
+        if (i % 2 === 0) {
+            questionText = `Q${i}: Split into two simple sentences: "We lived in our ancestral house, which was built in the middle of the 19th century."`;
+            opts = [
+                "1. We lived in our ancestral house. 2. It was built in the middle of the 19th century.",
+                "1. We lived in our house. 2. It was ancestral and built in the 19th century.",
+                "1. Our ancestral house was where we lived. 2. It was built in 19th century.",
+                "1. Living in ancestral house, it was 19th century."
+            ];
+            correctIdx = 0;
+        } else {
+            questionText = `Q${i}: Identify the Clause: "This water was then carried home for invalids who were waiting."`;
+            opts = ["Noun Clause", "Adjective/Relative Clause", "Adverbial Clause", "Prepositional Clause"];
+            correctIdx = 1;
+        }
+    }
+
+    mcqData.push({
+        id: i,
+        type: type,
+        question: questionText,
+        options: opts,
+        correct: correctIdx
+    });
+}
+
+// Render Questions Into Respective Sections
+function renderMCQs() {
+    mcqData.forEach(q => {
+        let containerId = "";
+        if (q.id <= 50) containerId = "sec1-container";
+        else if (q.id <= 100) containerId = "sec2-container";
+        else if (q.id <= 150) containerId = "sec3-container";
+        else containerId = "sec4-container";
+
+        const div = document.createElement('div');
+        div.className = 'mcq-card';
+        div.innerHTML = `
+            <p><strong>${q.question}</strong></p>
+            <div class="mcq-options">
+                ${q.options.map((opt, idx) => `
+                    <label>
+                        <input type="radio" name="q_${q.id}" value="${idx}">
+                        ${opt}
+                    </label>
+                `).join('')}
+            </div>
+            <button class="btn-submit" onclick="checkCardAnswer(${q.id}, ${q.correct})">Submit Answer</button>
+        `;
+        document.getElementById(containerId).appendChild(div);
+    });
+}
+
+function checkCardAnswer(qId, correctIdx) {
+    const selected = document.querySelector(`input[name="q_${qId}"]:checked`);
+    if (!selected) {
+        alert("Please select an option first!");
+        return;
+    }
+    checkAnswer(qId, parseInt(selected.value), correctIdx);
+}
+
+// Initialize on Load
+window.onload = () => {
+    renderMCQs();
+};
+</script>
+</body>
+</html>
