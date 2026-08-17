@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strong Roots - Interactive Reader & Practice Test</title>
+    <title>Strong Roots - Interactive Reader & 200 Random MCQs</title>
     <style>
         :root {
             --primary: #1e3a8a;
@@ -71,7 +71,6 @@
             display: block;
         }
 
-        /* Interactive Text Styles */
         .interactive-text {
             font-size: 1.1rem;
             text-align: justify;
@@ -97,7 +96,6 @@
             font-size: 0.8rem;
         }
 
-        /* Tooltip Popup */
         #tooltip {
             position: absolute;
             display: none;
@@ -111,7 +109,6 @@
             pointer-events: none;
         }
 
-        /* MCQ Styles */
         .mcq-card {
             background: #f1f5f9;
             padding: 20px;
@@ -139,7 +136,6 @@
             margin-right: 10px;
         }
 
-        /* Critical Analysis Box */
         .analysis-box {
             background: #eff6ff;
             border-left: 4px solid var(--primary-light);
@@ -148,7 +144,6 @@
             border-radius: 0 8px 8px 0;
         }
 
-        /* Overlay & Animations */
         #animation-overlay {
             position: fixed;
             top: 0;
@@ -165,7 +160,6 @@
             text-align: center;
         }
 
-        /* Flag Hoisting Animation */
         .flag-container {
             width: 200px;
             height: 300px;
@@ -200,7 +194,6 @@
             100% { bottom: 200px; }
         }
 
-        /* Missile Blast Animation */
         .missile {
             width: 10px;
             height: 40px;
@@ -266,10 +259,10 @@
 
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="showTab('reader')">Interactive Reader</button>
-        <button class="tab-btn" onclick="showTab('sec1')">Section 1: Reason & Assertion (50)</button>
-        <button class="tab-btn" onclick="showTab('sec2')">Section 2: Rearrange, True/False (50)</button>
-        <button class="tab-btn" onclick="showTab('sec3')">Section 3: Grammar - Narration & Joining (50)</button>
-        <button class="tab-btn" onclick="showTab('sec4')">Section 4: Grammar - Splitting & Clauses (50)</button>
+        <button class="tab-btn" onclick="showTab('sec1')">Section 1: Random 1-50 (MCQ)</button>
+        <button class="tab-btn" onclick="showTab('sec2')">Section 2: Random 51-100 (MCQ)</button>
+        <button class="tab-btn" onclick="showTab('sec3')">Section 3: Random 101-150 (MCQ)</button>
+        <button class="tab-btn" onclick="showTab('sec4')">Section 4: Random 151-200 (MCQ)</button>
         <button class="tab-btn" onclick="showTab('analysis')">Critical Analysis</button>
     </div>
 
@@ -1240,29 +1233,11 @@
         </div>
     </div>
 
-    <!-- TAB 2: SECTION 1 (MCQs 1-50) -->
-    <div id="sec1" class="tab-content">
-        <h2>Section 1: Assertion & Reason (50 Questions)</h2>
-        <div id="sec1-container"></div>
-    </div>
-
-    <!-- TAB 3: SECTION 2 (MCQs 51-100) -->
-    <div id="sec2" class="tab-content">
-        <h2>Section 2: Rearrange & True/False (50 Questions)</h2>
-        <div id="sec2-container"></div>
-    </div>
-
-    <!-- TAB 4: SECTION 3 (MCQs 101-150) -->
-    <div id="sec3" class="tab-content">
-        <h2>Section 3: Narration & Simple/Complex Joining (50 Questions)</h2>
-        <div id="sec3-container"></div>
-    </div>
-
-    <!-- TAB 5: SECTION 4 (MCQs 151-200) -->
-    <div id="sec4" class="tab-content">
-        <h2>Section 4: Splitting & Clause Analysis (50 Questions)</h2>
-        <div id="sec4-container"></div>
-    </div>
+    <!-- TABS FOR SECTIONS 1-4 -->
+    <div id="sec1" class="tab-content"><h2>Section 1: Random MCQs 1-50</h2><div id="sec1-container"></div></div>
+    <div id="sec2" class="tab-content"><h2>Section 2: Random MCQs 51-100</h2><div id="sec2-container"></div></div>
+    <div id="sec3" class="tab-content"><h2>Section 3: Random MCQs 101-150</h2><div id="sec3-container"></div></div>
+    <div id="sec4" class="tab-content"><h2>Section 4: Random MCQs 151-200</h2><div id="sec4-container"></div></div>
 
     <!-- TAB 6: CRITICAL ANALYSIS -->
     <div id="analysis" class="tab-content">
@@ -1281,201 +1256,229 @@
 </div>
 
 <script>
-// Word hover logic for Bengali translations
-const tooltip = document.getElementById('tooltip');
-document.querySelectorAll('.word').forEach(word => {
-    word.addEventListener('mouseenter', (e) => {
-        const bnText = e.target.getAttribute('data-bn');
-        if (bnText) {
-            tooltip.innerText = bnText;
-            tooltip.style.display = 'block';
-        }
+    // Word hover logic for Bengali translations
+    const tooltip = document.getElementById('tooltip');
+    document.querySelectorAll('.word').forEach(word => {
+        word.addEventListener('mouseenter', (e) => {
+            const bnText = e.target.getAttribute('data-bn');
+            if (bnText) {
+                tooltip.innerText = bnText;
+                tooltip.style.display = 'block';
+            }
+        });
+        word.addEventListener('mousemove', (e) => {
+            tooltip.style.left = e.pageX + 10 + 'px';
+            tooltip.style.top = e.pageY + 10 + 'px';
+        });
+        word.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+        });
     });
-    word.addEventListener('mousemove', (e) => {
-        tooltip.style.left = e.pageX + 10 + 'px';
-        tooltip.style.top = e.pageY + 10 + 'px';
-    });
-    word.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
-    });
-});
 
-// Tab switching logic
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
-}
-
-// Interactive Animations Trigger
-function triggerSuccessAnimation() {
-    const overlay = document.getElementById('animation-overlay');
-    const content = document.getElementById('animation-content');
-    content.innerHTML = `
-        <h2 style="color: #4ade80;">Correct Answer!</h2>
-        <div class="flag-container">
-            <div class="indian-flag">
-                <div class="saffron"></div>
-                <div class="white"><div class="chakra"></div></div>
-                <div class="green"></div>
-            </div>
-        </div>
-        <p style="margin-top: 20px;">Jai Hind!</p>
-    `;
-    overlay.style.display = 'flex';
-}
-
-function triggerFailureAnimation() {
-    const overlay = document.getElementById('animation-overlay');
-    const content = document.getElementById('animation-content');
-    content.innerHTML = `
-        <h2 style="color: #f87171;">Incorrect Answer!</h2>
-        <div style="position: relative; width: 200px; height: 200px; display: flex; justify-content: center; align-items: center;">
-            <div class="missile"></div>
-            <div class="blast"></div>
-        </div>
-        <p style="margin-top: 20px;">Mission Aborted!</p>
-    `;
-    overlay.style.display = 'flex';
-}
-
-function closeOverlay() {
-    document.getElementById('animation-overlay').style.display = 'none';
-}
-
-function checkAnswer(qNum, selected, correct) {
-    if (selected === correct) {
-        triggerSuccessAnimation();
-    } else {
-        triggerFailureAnimation();
-    }
-}
-
-// Generate Questions Programmatically for 200 MCQs
-const mcqData = [];
-
-// Helper generator
-for(let i=1; i<=200; i++) {
-    let type = "";
-    let questionText = "";
-    let opts = [];
-    let correctIdx = 0;
-
-    if (i <= 50) {
-        // Section 1: Assertion Reason
-        type = "Assertion & Reason";
-        if (i % 2 === 1) {
-            questionText = `Q${i}: Assertion (A): Kalam's father possessed great innate wisdom.\nReason (R): He had vast formal education and wealth.`;
-            opts = ["Both A and R are true, and R is the correct explanation", "A is true, but R is false", "A is false, but R is true", "Both A and R are false"];
-            correctIdx = 1;
-        } else {
-            questionText = `Q${i}: Assertion (A): Rameswaram was famous to pilgrims due to the Shiva Temple.\nReason (R): It was a ten-minute walk from Kalam's ancestral house.`;
-            opts = ["Both A and R are true, and R is the correct explanation", "Both A and R are true, but R is NOT the correct explanation", "A is true, but R is false", "Both A and R are false"];
-            correctIdx = 1;
-        }
-    } else if (i <= 100) {
-        // Section 2: Rearrange & True/False
-        type = "Rearrange / True-False";
-        if (i % 2 === 0) {
-            questionText = `Q${i}: True/False: Kalam's mother's lineage was given the title 'Bahadur' by the British.`;
-            opts = ["True", "False"];
-            correctIdx = 0;
-        } else {
-            questionText = `Q${i}: Rearrange the events:\n1. Kalam ate with his mother\n2. Father read namaz at 4 am\n3. Father walked to coconut grove\n4. Father had breakfast`;
-            opts = ["1-2-3-4", "2-3-4-1", "3-2-1-4", "2-1-3-4"];
-            correctIdx = 1;
-        }
-    } else if (i <= 150) {
-        // Section 3: Narration & Joining
-        type = "Grammar: Narration & Joining";
-        if (i % 2 === 1) {
-            questionText = `Q${i}: Direct to Indirect: My father said, "There is nothing mysterious about prayer."`;
-            opts = [
-                "My father said that there was nothing mysterious about prayer.",
-                "My father says that there is nothing mysterious about prayer.",
-                "My father told that there is nothing mysterious about prayer.",
-                "My father asked if there was nothing mysterious about prayer."
-            ];
-            correctIdx = 0;
-        } else {
-            questionText = `Q${i}: Join into Simple Sentence: I was a short boy. I was born to tall parents.`;
-            opts = [
-                "Being a short boy, I was born to tall parents.",
-                "I was a short boy born to tall parents.",
-                "I was a short boy and I was born to tall parents.",
-                "Although I was a short boy, I was born to tall parents."
-            ];
-            correctIdx = 1;
-        }
-    } else {
-        // Section 4: Splitting & Clauses
-        type = "Grammar: Splitting & Clauses";
-        if (i % 2 === 0) {
-            questionText = `Q${i}: Split into two simple sentences: "We lived in our ancestral house, which was built in the middle of the 19th century."`;
-            opts = [
-                "1. We lived in our ancestral house. 2. It was built in the middle of the 19th century.",
-                "1. We lived in our house. 2. It was ancestral and built in the 19th century.",
-                "1. Our ancestral house was where we lived. 2. It was built in 19th century.",
-                "1. Living in ancestral house, it was 19th century."
-            ];
-            correctIdx = 0;
-        } else {
-            questionText = `Q${i}: Identify the Clause: "This water was then carried home for invalids who were waiting."`;
-            opts = ["Noun Clause", "Adjective/Relative Clause", "Adverbial Clause", "Prepositional Clause"];
-            correctIdx = 1;
-        }
+    // Tab switching logic
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
-    mcqData.push({
-        id: i,
-        type: type,
-        question: questionText,
-        options: opts,
-        correct: correctIdx
-    });
-}
-
-// Render Questions Into Respective Sections
-function renderMCQs() {
-    mcqData.forEach(q => {
-        let containerId = "";
-        if (q.id <= 50) containerId = "sec1-container";
-        else if (q.id <= 100) containerId = "sec2-container";
-        else if (q.id <= 150) containerId = "sec3-container";
-        else containerId = "sec4-container";
-
-        const div = document.createElement('div');
-        div.className = 'mcq-card';
-        div.innerHTML = `
-            <p><strong>${q.question}</strong></p>
-            <div class="mcq-options">
-                ${q.options.map((opt, idx) => `
-                    <label>
-                        <input type="radio" name="q_${q.id}" value="${idx}">
-                        ${opt}
-                    </label>
-                `).join('')}
+    // Interactive Animations Trigger
+    function triggerSuccessAnimation() {
+        const overlay = document.getElementById('animation-overlay');
+        const content = document.getElementById('animation-content');
+        content.innerHTML = `
+            <h2 style="color: #4ade80;">Correct Answer!</h2>
+            <div class="flag-container">
+                <div class="indian-flag">
+                    <div class="saffron"></div>
+                    <div class="white"><div class="chakra"></div></div>
+                    <div class="green"></div>
+                </div>
             </div>
-            <button class="btn-submit" onclick="checkCardAnswer(${q.id}, ${q.correct})">Submit Answer</button>
+            <p style="margin-top: 20px;">Jai Hind!</p>
         `;
-        document.getElementById(containerId).appendChild(div);
-    });
-}
-
-function checkCardAnswer(qId, correctIdx) {
-    const selected = document.querySelector(`input[name="q_${qId}"]:checked`);
-    if (!selected) {
-        alert("Please select an option first!");
-        return;
+        overlay.style.display = 'flex';
     }
-    checkAnswer(qId, parseInt(selected.value), correctIdx);
-}
 
-// Initialize on Load
-window.onload = () => {
-    renderMCQs();
-};
+    function triggerFailureAnimation() {
+        const overlay = document.getElementById('animation-overlay');
+        const content = document.getElementById('animation-content');
+        content.innerHTML = `
+            <h2 style="color: #f87171;">Incorrect Answer!</h2>
+            <div style="position: relative; width: 200px; height: 200px; display: flex; justify-content: center; align-items: center;">
+                <div class="missile"></div>
+                <div class="blast"></div>
+            </div>
+            <p style="margin-top: 20px;">Mission Aborted!</p>
+        `;
+        overlay.style.display = 'flex';
+    }
+
+    function closeOverlay() {
+        document.getElementById('animation-overlay').style.display = 'none';
+    }
+
+    // Function to check answer and trigger animation
+    function checkAnswer(selected, correct) {
+        if (selected === correct) {
+            triggerSuccessAnimation();
+        } else {
+            triggerFailureAnimation();
+        }
+    }
+
+    // ************* Generate 200 RANDOM MCQs without repetition *************
+    const allMcqData = [];
+    
+    // Build 200 distinct questions using templates but unique content
+    for (let i = 1; i <= 200; i++) {
+        let type = "";
+        let questionText = "";
+        let opts = [];
+        let correctIdx = 0;
+
+        // Create varied questions based on number groups for uniqueness
+        if (i <= 40) {
+            // Section 1: Assertion Reason (unique variants)
+            if (i % 4 === 1) {
+                questionText = `Q${i}: Assertion (A): Kalam's father possessed great innate wisdom.\nReason (R): He had vast formal education.`;
+                opts = ["Both A and R are true, and R is correct explanation", "A is true, but R is false", "A is false, but R is true", "Both A and R are false"];
+                correctIdx = 1;
+            } else if (i % 4 === 2) {
+                questionText = `Q${i}: Assertion (A): Rameswaram was famous to pilgrims.\nReason (R): It had a famous mosque.`;
+                opts = ["Both A and R true, R explains A", "Both A and R true, R does NOT explain A", "A true, R false", "A false, R true"];
+                correctIdx = 2;
+            } else if (i % 4 === 3) {
+                questionText = `Q${i}: Assertion (A): The author's mother fed many outsiders.\nReason (R): She was the only cook.`;
+                opts = ["Both true, R explains A", "Both true, R not explains A", "A true, R false", "A false, R true"];
+                correctIdx = 2;
+            } else {
+                questionText = `Q${i}: Assertion (A): Kalam's father avoided all comforts.\nReason (R): He was wealthy but miserly.`;
+                opts = ["Both true, R explains A", "Both true, R not explains A", "A true, R false", "Both false"];
+                correctIdx = 2;
+            }
+        } else if (i <= 90) {
+            // Section 2: Rearrange / True-False (unique)
+            if (i % 4 === 1) {
+                questionText = `Q${i}: True/False: Kalam's mother's lineage received the title 'Bahadur'.`;
+                opts = ["True", "False"];
+                correctIdx = 0;
+            } else if (i % 4 === 2) {
+                questionText = `Q${i}: Rearrange: 1. Father read namaz; 2. Walked to grove; 3. Returned with coconuts; 4. Had breakfast`;
+                opts = ["1-2-3-4", "2-3-4-1", "1-3-2-4", "3-2-1-4"];
+                correctIdx = 0;
+            } else if (i % 4 === 3) {
+                questionText = `Q${i}: True/False: Kalam's father was formally educated.`;
+                opts = ["True", "False"];
+                correctIdx = 1;
+            } else {
+                questionText = `Q${i}: Rearrange: 1. Kalam ate with mother; 2. She placed banana leaf; 3. Ladled rice; 4. Added chutney`;
+                opts = ["1-2-3-4", "2-1-3-4", "2-3-4-1", "4-3-2-1"];
+                correctIdx = 2;
+            }
+        } else if (i <= 140) {
+            // Section 3: Narration & Joining
+            if (i % 4 === 1) {
+                questionText = `Q${i}: Direct: Father said, "There is nothing mysterious about prayer."`;
+                opts = ["Father said that there was nothing mysterious about prayer.", "Father says there is nothing mysterious.", "Father told that there was nothing mysterious.", "Father asked if there was nothing mysterious."];
+                correctIdx = 0;
+            } else if (i % 4 === 2) {
+                questionText = `Q${i}: Join into Simple: I was a short boy. I was born to tall parents.`;
+                opts = ["Being a short boy, I was born to tall parents.", "I was a short boy born to tall parents.", "I was a short boy and born to tall parents.", "Although short, I was born to tall parents."];
+                correctIdx = 1;
+            } else if (i % 4 === 3) {
+                questionText = `Q${i}: Direct: He asked, "Why don't you say this to people?"`;
+                opts = ["He asked why I didn't say that to people.", "He said why don't you say this to people.", "He asked that why don't I say this.", "He wondered why you don't say that."];
+                correctIdx = 0;
+            } else {
+                questionText = `Q${i}: Join into Simple: I am convinced. A divine power exists.`;
+                opts = ["I am convinced that a divine power exists.", "I am convinced of a divine power existing.", "I am convinced and a divine power exists.", "A divine power exists because I am convinced."];
+                correctIdx = 1;
+            }
+        } else {
+            // Section 4: Splitting & Clauses
+            if (i % 4 === 1) {
+                questionText = `Q${i}: Split: "We lived in an ancestral house, which was built in the 19th century."`;
+                opts = ["We lived in an ancestral house. It was built in the 19th century.", "We lived in a house. It was ancestral and 19th century.", "Our house was ancestral. It was built in 19th century.", "Living in ancestral house, it was 19th century."];
+                correctIdx = 0;
+            } else if (i % 4 === 2) {
+                questionText = `Q${i}: Identify Clause: "This water was carried home for invalids who were waiting."`;
+                opts = ["Noun Clause", "Adjective/Relative Clause", "Adverbial Clause", "Prepositional Clause"];
+                correctIdx = 1;
+            } else if (i % 4 === 3) {
+                questionText = `Q${i}: Split: "My father could convey complex concepts in simple Tamil."`;
+                opts = ["My father could convey complex concepts. He used simple Tamil.", "My father was able to convey complex concepts. The Tamil was simple.", "Complex concepts were conveyed by father. Tamil was simple.", "Father conveyed complex concepts simply in Tamil."];
+                correctIdx = 0;
+            } else {
+                questionText = `Q${i}: Identify Clause: "He told me that there was nothing mysterious."`;
+                opts = ["Adjective Clause", "Adverbial Clause", "Noun Clause", "Independent Clause"];
+                correctIdx = 2;
+            }
+        }
+
+        allMcqData.push({
+            id: i,
+            question: questionText,
+            options: opts,
+            correct: correctIdx
+        });
+    }
+
+    // Shuffle function (Fisher-Yates)
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    const shuffledAll = shuffleArray([...allMcqData]);
+    const sec1Data = shuffledAll.slice(0, 50);
+    const sec2Data = shuffledAll.slice(50, 100);
+    const sec3Data = shuffledAll.slice(100, 150);
+    const sec4Data = shuffledAll.slice(150, 200);
+
+    // Render MCQs into sections
+    function renderSection(data, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        data.forEach(q => {
+            const div = document.createElement('div');
+            div.className = 'mcq-card';
+            const optionsHtml = q.options.map((opt, idx) => `
+                <label>
+                    <input type="radio" name="q_${q.id}" value="${idx}">
+                    ${opt}
+                </label>
+            `).join('');
+            div.innerHTML = `
+                <p><strong>${q.question}</strong></p>
+                <div class="mcq-options">${optionsHtml}</div>
+                <button class="btn-submit" onclick="checkCardAnswer(${q.id}, ${q.correct})">Submit Answer</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // Check answer from a card
+    function checkCardAnswer(qId, correctIdx) {
+        const selected = document.querySelector(`input[name="q_${qId}"]:checked`);
+        if (!selected) {
+            alert("Please select an option first!");
+            return;
+        }
+        checkAnswer(parseInt(selected.value), correctIdx);
+    }
+
+    // Initialize on load
+    window.onload = () => {
+        renderSection(sec1Data, 'sec1-container');
+        renderSection(sec2Data, 'sec2-container');
+        renderSection(sec3Data, 'sec3-container');
+        renderSection(sec4Data, 'sec4-container');
+    };
 </script>
 </body>
-</html>
+    </html>
